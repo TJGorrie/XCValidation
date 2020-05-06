@@ -86,9 +86,8 @@ def new_process_covalent(directory):
             pdb = open(bound_pdb, 'r').readlines()
             for line in pdb:
                 if 'LINK' in line:
-                    logging.info("Found Link in " + str(f))
-                    print('Found Link')
-                    print(str(f))
+                    #print('Found Link')
+                    #print(str(f))
                     zero = line[13:27]
                     one = line[43:57]
                     if 'LIG' in zero:
@@ -97,7 +96,8 @@ def new_process_covalent(directory):
                         res = zero
                     covalent=True
             if covalent:
-                print(str(f))
+                logging.info("Found Covalent in " + str(f))
+                #print(str(f))
                 for line in pdb:
                     if 'ATOM' in line and line[13:27]==res:
                         res_x = float(line[31:39])
@@ -107,7 +107,7 @@ def new_process_covalent(directory):
                         atom_sym_no = pd.read_csv('/home/mly94721/XCValidation/atom_numbers.csv', index_col=0, parse_dates=True)
                         res_atom_no = atom_sym_no.loc[res_atom_sym].number
                         res_coords = [res_x, res_y, res_z]
-                        print(res_coords)
+                        #print(res_coords)
                         atm = Chem.MolFromPDBBlock(line)
                         atm_trans = atm.GetAtomWithIdx(0)
                 mol = Chem.MolFromMolFile(mol_file)
@@ -125,7 +125,7 @@ def new_process_covalent(directory):
                         dist = get_3d_distance(coords, res_coords)
                         if dist < old_dist:
                             ind_to_add = j
-                            print(dist)
+                            #print(dist)
                             old_dist = dist
                 i = mol.GetNumAtoms()
                 edmol = Chem.EditableMol(mol)
