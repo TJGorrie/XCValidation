@@ -1,5 +1,3 @@
-# Test... Validator.py
-# conda activate /dls/science/groups/i04-1/software/miniconda_3/envs/fragalysis_env2
 from fragalysis_api import Validate, Align
 from fragalysis_api.xcimporter.conversion_pdb_mol import set_up
 import os
@@ -7,27 +5,8 @@ from shutil import copyfile, rmtree
 import argparse
 from sys import exit
 import sys, json, os, glob
-#from django.contrib.auth.models import User
-#from viewer.models import Target, Protein, Molecule, Compound, Project
-#from hypothesis.models import (
-#    Vector3D,
-#    Vector,
-#    InteractionPoint,
-#    TargetResidue,
-#    ProteinResidue,
-#    Interaction,
-#)
-#from hypothesis.definitions import VectTypes, IntTypes
-#from hotspots.models import HotspotMap
-#from django.core.exceptions import ValidationError
-#from django.core.files import File
 from rdkit import Chem
 from rdkit.Chem import Descriptors
-#from scoring.models import MolGroup,MolAnnotation
-#from frag.alysis.run_clustering import run_lig_cluster
-#from loader.functions import sanitize_mol, get_path_or_none
-#from frag.network.decorate import get_3d_vects_for_mol
-#from loader.config import get_dict
 import numpy as np
 import pandas as pd
 from rdkit.Geometry import Point3D
@@ -158,6 +137,7 @@ def new_process_covalent(directory):
                 except ValueError:
                     Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
@@ -189,8 +169,6 @@ if __name__ == "__main__":
     target = args["target"]
 
     # Validate file paths?
-
-
     #if in_dir == os.path.join("..", "..", "data", "xcimporter", "input"):
     #    print("Using the default input directory ", in_dir)
     #if out_dir == os.path.join("..", "..", "data", "xcimporter", "output"):
@@ -210,18 +188,11 @@ if __name__ == "__main__":
           ' These files were unable to produce RDKit molecules, so the error likely lies in the way the ligand atoms or'
           'the conect files have been written in the pdb file')
 
+    # Go into the output folder and attempt to parse...
     dir2 = os.path.join(out_dir, target)
 
     # Add more verbose outputs?
     new_process_covalent(directory = dir2)
-
-
-#in_dir='/dls/science/groups/i04-1/fragprep/input/Mpro/'
-#out_dir='/home/mly94721/dumpout/'
-#target='Mpro'
-#validate=False
-#xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target)
-#new_process_covalent(directory = '/home/mly94721/dumpout/Mpro/')
 
 
 
