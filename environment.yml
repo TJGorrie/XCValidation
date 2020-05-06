@@ -1,0 +1,5 @@
+name: pipeline
+channels:
+  - defaults
+prefix: /dls/science/groups/i04-1/software/anaconda/envs/pipeline
+
