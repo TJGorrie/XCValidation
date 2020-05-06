@@ -182,7 +182,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(out_dir, "tmp"))
         os.makedirs(os.path.join(out_dir, target)) 
 
-    logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, target, 'test.log'), filemode="a+",
+    logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, 'test.log'), filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
     logging.info("Start Validation Process")
 
