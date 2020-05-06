@@ -10,13 +10,14 @@ from rdkit.Chem import Descriptors
 import numpy as np
 import pandas as pd
 from rdkit.Geometry import Point3D
+import logging
 
 def get_3d_distance(coord_a, coord_b):
     sum_ = (sum([(float(coord_a[i])-float(coord_b[i]))**2 for i in range(3)]))
     return np.sqrt(sum_)
 
 
-def xcvalidate(in_dir, out_dir, target, validate=False):
+def xcvalidate(in_dir, out_dir, target, validate=False, logfile):
     if validate:
         validation = Validate(in_dir)
         if not bool(validation.is_pdbs_valid):
@@ -74,7 +75,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
     return
 
 
-def new_process_covalent(directory):
+def new_process_covalent(directory, logfile):
     for f in [x[0] for x in os.walk(directory)]:
         covalent = False
         #print(str(f) + '/*_bound.pdb')
@@ -85,6 +86,7 @@ def new_process_covalent(directory):
             pdb = open(bound_pdb, 'r').readlines()
             for line in pdb:
                 if 'LINK' in line:
+                    logging.info("Found Link in " + str(f))
                     print('Found Link')
                     print(str(f))
                     zero = line[13:27]
@@ -174,16 +176,22 @@ if __name__ == "__main__":
     #if out_dir == os.path.join("..", "..", "data", "xcimporter", "output"):
     #    print("Using the default input directory ", out_dir)
 
-    xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
+    logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, target, 'test.log'), filemode="a+",
+                        format="%(asctime)-15s %(levelname)-8s %(message)s")
+    logging.info("Start Validation Process")
 
-    fix_pdb = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
+
+    # Log file handler...
+    pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
+
+    xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
 
     for target_file in os.listdir(os.path.join(out_dir, target)):
         if target_file != 'pdb_file_failures.txt' and len(os.listdir(os.path.join(out_dir, target, target_file))) < 2:
             rmtree(os.path.join(out_dir, target, target_file))
-            fix_pdb.write(target_file.split('-')[1]+'\n')
+            pdb_file_failures.write(target_file.split('-')[1]+'\n')
 
-    fix_pdb.close()
+
     print('For files that we were unable to process, look at the pdb_file_failures.txt file in your results directory.'
           ' These files were unable to produce RDKit molecules, so the error likely lies in the way the ligand atoms or'
           'the conect files have been written in the pdb file')
@@ -193,6 +201,8 @@ if __name__ == "__main__":
 
     # Add more verbose outputs?
     new_process_covalent(directory = dir2)
+    pdb_file_failures.close()
+    logging.info("End Validation Process")
 
 
 
