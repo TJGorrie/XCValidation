@@ -17,7 +17,7 @@ def get_3d_distance(coord_a, coord_b):
     return np.sqrt(sum_)
 
 
-def xcvalidate(in_dir, out_dir, target, validate=False, logfile):
+def xcvalidate(in_dir, out_dir, target, validate=False):
     if validate:
         validation = Validate(in_dir)
         if not bool(validation.is_pdbs_valid):
@@ -75,7 +75,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False, logfile):
     return
 
 
-def new_process_covalent(directory, logfile):
+def new_process_covalent(directory):
     for f in [x[0] for x in os.walk(directory)]:
         covalent = False
         #print(str(f) + '/*_bound.pdb')
@@ -175,6 +175,12 @@ if __name__ == "__main__":
     #    print("Using the default input directory ", in_dir)
     #if out_dir == os.path.join("..", "..", "data", "xcimporter", "output"):
     #    print("Using the default input directory ", out_dir)
+
+    if not os.path.isdir(out_dir):
+        print('Making Output Dir')
+        os.makedirs(out_dir)
+        os.makedirs(os.path.join(out_dir, "tmp"))
+        os.makedirs(os.path.join(out_dir, target)) 
 
     logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, target, 'test.log'), filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
