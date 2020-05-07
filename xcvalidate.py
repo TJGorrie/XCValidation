@@ -166,7 +166,7 @@ def new_process_covalent(directory):
             logging.warning('Unable to create .mol file for {0}'.format(str(f))) 
             # Usually a weird error where Link is established but res does not get defined.
         else:
-            logging.info("Created New .mol File: " + str(mol_file))
+            logging.info("Created New .mol for " + str(f))
 
 
 if __name__ == "__main__":
