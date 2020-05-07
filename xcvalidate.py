@@ -95,73 +95,76 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
 
 def new_process_covalent(directory):
     for f in [x[0] for x in os.walk(directory)]:
-        covalent = False
-        #print(str(f) + '/*_bound.pdb')
-        #print(glob.glob(str(f) + '/*_bound.pdb'))
-        if glob.glob(str(f) + '/*_bound.pdb'):
-            bound_pdb = glob.glob(str(f) + '/*_bound.pdb')[0]
-            mol_file = glob.glob(str(f) + '/*.mol')[0]
-            pdb = open(bound_pdb, 'r').readlines()
-            for line in pdb:
-                if 'LINK' in line:
-                    #print('Found Link')
-                    #print(str(f))
-                    try:
-                        zero = line[13:27]
-                        one = line[43:57]
-                        if 'LIG' in zero:
-                            res = one
-                        if 'LIG' in one:
-                            res = zero
-                        covalent=True
-                    except:
-                        logging.warning("Link was found in {0} but LIG not located within".format(str(f)))
-                    
-            if covalent:
-                logging.info("Found Covalent Link in " + str(f))
-                #print(str(f))
-                for line in pdb:
-                    if 'ATOM' in line and line[13:27]==res:
-                        res_x = float(line[31:39])
-                        res_y = float(line[39:47])
-                        res_z = float(line[47:55])
-                        res_atom_sym = line.rsplit()[-1].rstrip()
-                        atom_sym_no = pd.read_csv('/dls/science/groups/i04-1/software/tyler/xcvalidation/atom_numbers.csv', index_col=0, parse_dates=True)
-                        res_atom_no = atom_sym_no.loc[res_atom_sym].number
-                        res_coords = [res_x, res_y, res_z]
-                        #print(res_coords)
-                        atm = Chem.MolFromPDBBlock(line)
-                        atm_trans = atm.GetAtomWithIdx(0)
-                mol = Chem.MolFromMolFile(mol_file)
-                # edmol = Chem.EditableMol(mol)
-                orig_pdb_block = Chem.MolToPDBBlock(mol)
-                lig_block = '\n'.join([l for l in orig_pdb_block.split('\n') if 'COMPND' not in l])
-                lig_lines = [l for l in lig_block.split('\n') if 'HETATM' in l]
-                j = 0
-                old_dist = 100
-                for line in lig_lines:
-                    j += 1
-                    #                 print(line)
-                    if 'HETATM' in line:
-                        coords = [line[31:39].strip(), line[39:47].strip(), line[47:55].strip()]
-                        dist = get_3d_distance(coords, res_coords)
-                        if dist < old_dist:
-                            ind_to_add = j
-                            #print(dist)
-                            old_dist = dist
-                i = mol.GetNumAtoms()
-                edmol = Chem.EditableMol(mol)
-                edmol.AddAtom(atm_trans)
-                edmol.AddBond(ind_to_add - 1, i, Chem.BondType.SINGLE)
-                new_mol = edmol.GetMol()
-                conf = new_mol.GetConformer()
-                conf.SetAtomPosition(i, Point3D(res_coords[0], res_coords[1], res_coords[2]))
-                try:
-                    Chem.MolToMolFile(new_mol, mol_file)
-                except ValueError:
-                    Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
-                logging.info("Created New .mol File: " + str(mol_file))
 
+        try:
+            covalent = False
+            #print(str(f) + '/*_bound.pdb')
+            #print(glob.glob(str(f) + '/*_bound.pdb'))
+                if glob.glob(str(f) + '/*_bound.pdb'):
+                    bound_pdb = glob.glob(str(f) + '/*_bound.pdb')[0]
+                    mol_file = glob.glob(str(f) + '/*.mol')[0]
+                    pdb = open(bound_pdb, 'r').readlines()
+                for line in pdb:
+                    if 'LINK' in line:
+                        #print('Found Link')
+                        #print(str(f))
+                        try:
+                            zero = line[13:27]
+                            one = line[43:57]
+                            if 'LIG' in zero:
+                                res = one
+                            if 'LIG' in one:
+                                res = zero
+                            covalent=True
+                        except:
+                            logging.warning("Link was found in {0} but LIG not located within".format(str(f)))
+
+                if covalent:
+                    logging.info("Found Covalent Link in " + str(f))
+                    #print(str(f))
+                    for line in pdb:
+                        if 'ATOM' in line and line[13:27]==res:
+                            res_x = float(line[31:39])
+                            res_y = float(line[39:47])
+                            res_z = float(line[47:55])
+                            res_atom_sym = line.rsplit()[-1].rstrip()
+                            atom_sym_no = pd.read_csv('/dls/science/groups/i04-1/software/tyler/xcvalidation/atom_numbers.csv', index_col=0, parse_dates=True)
+                            res_atom_no = atom_sym_no.loc[res_atom_sym].number
+                            res_coords = [res_x, res_y, res_z]
+                            #print(res_coords)
+                            atm = Chem.MolFromPDBBlock(line)
+                            atm_trans = atm.GetAtomWithIdx(0)
+                    mol = Chem.MolFromMolFile(mol_file)
+                    # edmol = Chem.EditableMol(mol)
+                    orig_pdb_block = Chem.MolToPDBBlock(mol)
+                    lig_block = '\n'.join([l for l in orig_pdb_block.split('\n') if 'COMPND' not in l])
+                    lig_lines = [l for l in lig_block.split('\n') if 'HETATM' in l]
+                    j = 0
+                    old_dist = 100
+                    for line in lig_lines:
+                        j += 1
+                        #                 print(line)
+                        if 'HETATM' in line:
+                            coords = [line[31:39].strip(), line[39:47].strip(), line[47:55].strip()]
+                            dist = get_3d_distance(coords, res_coords)
+                            if dist < old_dist:
+                                ind_to_add = j
+                                #print(dist)
+                                old_dist = dist
+                    i = mol.GetNumAtoms()
+                    edmol = Chem.EditableMol(mol)
+                    edmol.AddAtom(atm_trans)
+                    edmol.AddBond(ind_to_add - 1, i, Chem.BondType.SINGLE)
+                    new_mol = edmol.GetMol()
+                    conf = new_mol.GetConformer()
+                    conf.SetAtomPosition(i, Point3D(res_coords[0], res_coords[1], res_coords[2]))
+                    try:
+                        Chem.MolToMolFile(new_mol, mol_file)
+                    except ValueError:
+                        Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
+                    logging.info("Created New .mol File: " + str(mol_file))
+            except:
+                logging.error('Unable to create .mol file for {0}'.format(str(f)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -212,24 +215,35 @@ if __name__ == "__main__":
     logging.info("output dir: {0}".format(str(out_dir)))
     logging.info("Target Name: {0}".format(str(target)))
     logging.info("Running Input Validation?: {0}".format(str(validate)))
-    xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
+
+    try:
+        xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
+        logging.info("Managed to Align and get pdbs")
+    except:
+        logging.error("Unable to align or create bound_pdb files")
 
     pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
 
     for target_file in os.listdir(os.path.join(out_dir, target)):
         if target_file != 'pdb_file_failures.txt' and len(os.listdir(os.path.join(out_dir, target, target_file))) < 2:
             rmtree(os.path.join(out_dir, target, target_file))
+            logging.warning('{0} was not processed...'.format(str(target_file.split('-')[1])))
             pdb_file_failures.write(target_file.split('-')[1]+'\n')
 
 
     print('For files that we were unable to process, look at the pdb_file_failures.txt file in your results directory.'
           ' These files were unable to produce RDKit molecules, so the error likely lies in the way the ligand atoms or'
-          'the conect files have been written in the pdb file')
+          'the connect files have been written in the pdb file')
 
     # Go into the output folder and attempt to parse...
     dir2 = os.path.join(out_dir, target)
     # Add more verbose outputs?
-    new_process_covalent(directory = dir2)
+    try:
+        new_process_covalent(directory = dir2)
+        logging.info('Created all mol files without error')
+    except:
+        logging.error('Some or all mol files were made with an error')
+
     pdb_file_failures.close()
     logging.info("End Validation Process")
 
