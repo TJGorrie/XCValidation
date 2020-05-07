@@ -32,7 +32,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
             #exit()
     pdb_smiles_dict = {'pdb': [], 'smiles': []}
     # Creating lists of pdbs and smiles
-    #print('Doing some pdb smiles stuff')
+    print('Enumerating pdbs and smiles paths')
     for f in os.listdir(in_dir):
             pdb_smiles_dict['pdb'].append(os.path.join(in_dir, f))
             #print(os.path.join(in_dir, f).replace('.pdb', '_smiles.txt'))
@@ -49,14 +49,14 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
         os.makedirs(os.path.join(out_dir, "tmp"))   
     
     # Align structures... Make boundpdb files... Wrap into a try?
-    #print('Aligning Structures')
+    print('Attempt to align pdbs')
     try:
         structure = Align(in_dir, pdb_ref="")
         structure.align(os.path.join(out_dir, "tmp"))
     except:
         logging.error("Unable to align pdbs in {0} together".format(str(in_dir)))
 
-    #print('Smiles Related Step')
+    print('Copying smiles files')
     for smiles_file in pdb_smiles_dict['smiles']:
         if smiles_file:
             #print(smiles_file)
@@ -79,14 +79,14 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
     
     print("Identifying ligands")
     for aligned, smiles in list(zip(aligned_dict['bound_pdb'], aligned_dict['smiles'])):
-        try:
+        try: # Redirect std:out?
             if smiles:
                 new = set_up(target_name=target, infile=os.path.abspath(aligned), out_dir=out_dir, smiles_file=os.path.abspath(smiles))
             else:
                 new = set_up(target_name=target, infile=os.path.abspath(aligned), out_dir=out_dir)
         except AssertionError:
             print(aligned, "is not suitable, please consider removal or editing")
-            logging.warning("{0} isn't suitable(?) Consider removal or editing".format(str(in_dir)))
+            logging.warning("{0} isn't suitable, consider removal or editing".format(str(aligned)))
             for file in os.listdir(os.path.join(out_dir, "tmp")):
                 if str(aligned) in file:
                     os.remove(os.path.join(out_dir, "tmp", str(file)))
@@ -205,9 +205,9 @@ if __name__ == "__main__":
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
     logging.info("Starting Validation Process")
     logging.info("input dir: {0}".format(str(in_dir)))
-    logging.info("output dir: {0}".format(str(in_dir)))
-    logging.info("Target Name: {0}".format(str(in_dir)))
-    logging.info("Running Input Validation?: {0}".format(str(in_dir)))
+    logging.info("output dir: {0}".format(str(out_dir)))
+    logging.info("Target Name: {0}".format(str(target)))
+    logging.info("Running Input Validation?: {0}".format(str(validate)))
     xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
 
     pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
