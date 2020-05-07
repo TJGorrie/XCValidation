@@ -55,6 +55,8 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
         structure.align(os.path.join(out_dir, "tmp"))
     except:
         logging.error("Unable to align pdbs in {0} together".format(str(in_dir)))
+    else:
+        logging.info('Successfully aligned')
 
     print('Copying smiles files')
     for smiles_file in pdb_smiles_dict['smiles']:
@@ -224,7 +226,7 @@ if __name__ == "__main__":
     except:
         logging.error("Unable to align or create bound_pdb files")
     else:
-        logging.info('Successfully aligned and created bound pdb files')
+        logging.info('Step 1')
 
     pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
 
@@ -245,9 +247,9 @@ if __name__ == "__main__":
     try:
         new_process_covalent(directory = dir2)
     except:
-        logging.error('Some or all mol files were made with an error')
+        logging.error('Some or all mol files had an error')
     else:
-        logging.info('All .mol files were created without error!')
+        logging.info('Step 2 Complete...')
 
     pdb_file_failures.close()
     logging.info("End Validation Process")
