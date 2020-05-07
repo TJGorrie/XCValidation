@@ -147,6 +147,7 @@ def new_process_covalent(directory):
                     Chem.MolToMolFile(new_mol, mol_file)
                 except ValueError:
                     Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
+                logging.info("Created New .mol File: " + str(mol_file))
 
 
 if __name__ == "__main__":
