@@ -163,8 +163,8 @@ def new_process_covalent(directory):
                     except ValueError:
                         Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
                     logging.info("Created New .mol File: " + str(mol_file))
-            except:
-                logging.error('Unable to create .mol file for {0}'.format(str(f)))
+        except:
+            logging.error('Unable to create .mol file for {0}'.format(str(f)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
