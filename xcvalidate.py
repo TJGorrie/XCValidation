@@ -110,20 +110,17 @@ def new_process_covalent(directory):
                     if 'LINK' in line:
                         #print('Found Link')
                         #print(str(f))
-                        try:
-                            zero = line[13:27]
-                            one = line[43:57]
-                            if 'LIG' in zero:
-                                res = one
-                            if 'LIG' in one:
-                                res = zero
-                            covalent=True
-                        except:
-                            logging.warning("Link was found in {0} but LIG not located within".format(str(f)))
+                        zero = line[13:27]
+                        one = line[43:57]
+                        if 'LIG' in zero:
+                            res = one
+                        if 'LIG' in one:
+                            res = zero
+                        covalent=True
 
                 if covalent:
                     logging.info("Found Covalent Link in " + str(f))
-                    #print(str(f))
+                    print(str(f))
                     for line in pdb:
                         if 'ATOM' in line and line[13:27]==res:
                             res_x = float(line[31:39])
@@ -145,7 +142,7 @@ def new_process_covalent(directory):
                     old_dist = 100
                     for line in lig_lines:
                         j += 1
-                        #                 print(line)
+                        # print(line)
                         if 'HETATM' in line:
                             coords = [line[31:39].strip(), line[39:47].strip(), line[47:55].strip()]
                             dist = get_3d_distance(coords, res_coords)
@@ -166,10 +163,11 @@ def new_process_covalent(directory):
                         Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
                     
         except:
-            logging.error('Unable to create .mol file for {0}'.format(str(f))) 
+            logging.warning('Unable to create .mol file for {0}'.format(str(f))) 
             # Usually a weird error where Link is established but res does not get defined.
         else:
             logging.info("Created New .mol File: " + str(mol_file))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -221,12 +219,12 @@ if __name__ == "__main__":
     logging.info("Target Name: {0}".format(str(target)))
     logging.info("Running Input Validation?: {0}".format(str(validate)))
 
-    try:
-        xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
-    except:
-        logging.error("Unable to align or create bound_pdb files")
-    else:
-        logging.info('Step 1')
+    #try:
+    xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
+    #except:
+    #    logging.error("Unable to align or create bound_pdb files")
+    #else:
+    #    logging.info('Step 1 Completed')
 
     pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
 
@@ -244,12 +242,12 @@ if __name__ == "__main__":
     # Go into the output folder and attempt to parse...
     dir2 = os.path.join(out_dir, target)
     # Add more verbose outputs?
-    try:
-        new_process_covalent(directory = dir2)
-    except:
-        logging.error('Some or all mol files had an error')
-    else:
-        logging.info('Step 2 Complete...')
+    #try:
+    new_process_covalent(directory = dir2)
+    #except:
+    #    logging.error('Errors occured while attempting to create mol files. Either alignment failed upstream or some files were unsuitable')
+    #else:
+    #    logging.info('Step 2 Completed without ANY errors...')
 
     pdb_file_failures.close()
     logging.info("End Validation Process")
