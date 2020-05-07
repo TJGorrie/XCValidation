@@ -100,10 +100,10 @@ def new_process_covalent(directory):
             covalent = False
             #print(str(f) + '/*_bound.pdb')
             #print(glob.glob(str(f) + '/*_bound.pdb'))
-                if glob.glob(str(f) + '/*_bound.pdb'):
-                    bound_pdb = glob.glob(str(f) + '/*_bound.pdb')[0]
-                    mol_file = glob.glob(str(f) + '/*.mol')[0]
-                    pdb = open(bound_pdb, 'r').readlines()
+            if glob.glob(str(f) + '/*_bound.pdb'):
+                bound_pdb = glob.glob(str(f) + '/*_bound.pdb')[0]
+                mol_file = glob.glob(str(f) + '/*.mol')[0]
+                pdb = open(bound_pdb, 'r').readlines()
                 for line in pdb:
                     if 'LINK' in line:
                         #print('Found Link')
