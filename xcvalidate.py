@@ -86,7 +86,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
                 new = set_up(target_name=target, infile=os.path.abspath(aligned), out_dir=out_dir, smiles_file=os.path.abspath(smiles))
             else:
                 new = set_up(target_name=target, infile=os.path.abspath(aligned), out_dir=out_dir)
-        except AssertionError:
+        except: # AssertionError: # Additional Error caused by innapropriate Valencies?
             print(aligned, "is not suitable, please consider removal or editing")
             logging.warning("{0} isn't suitable, consider removal or editing".format(str(aligned)))
             for file in os.listdir(os.path.join(out_dir, "tmp")):
@@ -120,7 +120,7 @@ def new_process_covalent(directory):
 
                 if covalent:
                     logging.info("Found Covalent Link in " + str(f))
-                    print(str(f))
+                    #print(str(f))
                     for line in pdb:
                         if 'ATOM' in line and line[13:27]==res:
                             res_x = float(line[31:39])
