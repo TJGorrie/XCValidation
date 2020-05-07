@@ -32,7 +32,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
             #exit()
     pdb_smiles_dict = {'pdb': [], 'smiles': []}
     # Creating lists of pdbs and smiles
-    print('Doing some pdb smiles stuff')
+    #print('Doing some pdb smiles stuff')
     for f in os.listdir(in_dir):
             pdb_smiles_dict['pdb'].append(os.path.join(in_dir, f))
             #print(os.path.join(in_dir, f).replace('.pdb', '_smiles.txt'))
@@ -50,15 +50,23 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
     
     # Align structures... Make boundpdb files... Wrap into a try?
     #print('Aligning Structures')
-    structure = Align(in_dir, pdb_ref="")
-    structure.align(os.path.join(out_dir, "tmp"))
+    try:
+        structure = Align(in_dir, pdb_ref="")
+        structure.align(os.path.join(out_dir, "tmp"))
+    except:
+        logging.error("Unable to align pdbs in {0} together".format(str(in_dir)))
 
     #print('Smiles Related Step')
     for smiles_file in pdb_smiles_dict['smiles']:
         if smiles_file:
             #print(smiles_file)
-            copyfile(smiles_file, os.path.join(os.path.join(out_dir, "tmp", smiles_file.split('/')[-1])))
+            try:
+                copyfile(smiles_file, os.path.join(os.path.join(out_dir, "tmp", smiles_file.split('/')[-1])))
             #print(os.path.join(out_dir, "tmp", smiles_file.split('/')[-1]))
+            except:
+                logging.warning("Unable to copy {0} to {1}".format(smiles_file, "tmp"))
+
+    
     aligned_dict = {'bound_pdb':[], 'smiles':[]}
     for f in os.listdir(os.path.join(out_dir, "tmp")):
         if '.pdb' in f:
@@ -67,6 +75,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
                 aligned_dict['smiles'].append(os.path.join(out_dir, "tmp",f).replace('_bound.pdb', '_smiles.txt'))
             else:
                 aligned_dict['smiles'].append(None)
+                logging.warning("{0} is still missing smiles file".format(str(f)))
     
     print("Identifying ligands")
     for aligned, smiles in list(zip(aligned_dict['bound_pdb'], aligned_dict['smiles'])):
