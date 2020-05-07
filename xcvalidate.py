@@ -162,9 +162,12 @@ def new_process_covalent(directory):
                         Chem.MolToMolFile(new_mol, mol_file)
                     except ValueError:
                         Chem.MolToMolFile(new_mol, mol_file, kekulize=False)
-                    logging.info("Created New .mol File: " + str(mol_file))
+                    
         except:
-            logging.error('Unable to create .mol file for {0}'.format(str(f)))
+            logging.error('Unable to create .mol file for {0}'.format(str(f))) 
+            # Usually a weird error where Link is established but res does not get defined.
+        else:
+            logging.info("Created New .mol File: " + str(mol_file))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -218,9 +221,10 @@ if __name__ == "__main__":
 
     try:
         xcvalidate(in_dir=in_dir, out_dir=out_dir, target=target, validate=validate)
-        logging.info("Managed to Align and get pdbs")
     except:
         logging.error("Unable to align or create bound_pdb files")
+    else:
+        logging.info('Successfully aligned and created bound pdb files')
 
     pdb_file_failures = open(os.path.join(out_dir, target, 'pdb_file_failures.txt'), 'w')
 
@@ -242,6 +246,8 @@ if __name__ == "__main__":
         new_process_covalent(directory = dir2)
     except:
         logging.error('Some or all mol files were made with an error')
+    else:
+        logging.info('All .mol files were created without error!')
 
     pdb_file_failures.close()
     logging.info("End Validation Process")
