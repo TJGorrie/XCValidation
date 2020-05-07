@@ -106,13 +106,17 @@ def new_process_covalent(directory):
                 if 'LINK' in line:
                     #print('Found Link')
                     #print(str(f))
-                    zero = line[13:27]
-                    one = line[43:57]
-                    if 'LIG' in zero:
-                        res = one
-                    if 'LIG' in one:
-                        res = zero
-                    covalent=True
+                    try:
+                        zero = line[13:27]
+                        one = line[43:57]
+                        if 'LIG' in zero:
+                            res = one
+                        if 'LIG' in one:
+                            res = zero
+                        covalent=True
+                    except:
+                        logging.warning("Link was found in {0} but LIG not located within".format(str(f)))
+                    
             if covalent:
                 logging.info("Found Covalent Link in " + str(f))
                 #print(str(f))
