@@ -240,7 +240,6 @@ if __name__ == "__main__":
     # Add more verbose outputs?
     try:
         new_process_covalent(directory = dir2)
-        logging.info('Created all mol files without error')
     except:
         logging.error('Some or all mol files were made with an error')
 
