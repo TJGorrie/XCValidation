@@ -44,7 +44,7 @@ def xcvalidate(in_dir, out_dir, target, validate=False):
 
     # Create output if not exist.
     if not os.path.isdir(out_dir):
-        print('Making Output Dir')
+        #print('Making Output Dir')
         os.makedirs(out_dir)
         os.makedirs(os.path.join(out_dir, "tmp"))   
     
@@ -113,7 +113,7 @@ def new_process_covalent(directory):
                         res_y = float(line[39:47])
                         res_z = float(line[47:55])
                         res_atom_sym = line.rsplit()[-1].rstrip()
-                        atom_sym_no = pd.read_csv('/home/mly94721/XCValidation/atom_numbers.csv', index_col=0, parse_dates=True)
+                        atom_sym_no = pd.read_csv('/dls/science/groups/i04-1/software/tyler/xcvalidation/atom_numbers.csv', index_col=0, parse_dates=True)
                         res_atom_no = atom_sym_no.loc[res_atom_sym].number
                         res_coords = [res_x, res_y, res_z]
                         #print(res_coords)
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(out_dir, "tmp"))
         os.makedirs(os.path.join(out_dir, target)) 
     # Log file handler...
-    logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, 'test.log'), filemode="a+",
+    logging.basicConfig(level=logging.DEBUG, filename = os.path.join(out_dir, 'validation.log'), filemode="a+",
                         format="%(asctime)-15s %(levelname)-8s %(message)s")
     logging.info("Starting Validation Process")
     logging.info("input dir: {0}".format(str(in_dir)))
